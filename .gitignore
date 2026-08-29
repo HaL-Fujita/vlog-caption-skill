@@ -1,0 +1,13 @@
+# Private/local artifacts
+.DS_Store
+.env
+*.mp4
+*.mov
+*.m4v
+*.wav
+*.mp3
+*.json
+*.log
+*.jpg
+*.png
+transcript*.txt
