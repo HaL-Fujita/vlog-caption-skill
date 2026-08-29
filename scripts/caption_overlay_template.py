@@ -43,6 +43,7 @@ PROHIBITED_LINE_START = set('、。，．・：；？！゛゜ヽヾゝゞ々ー
 PROHIBITED_LINE_END = set('（〔［｛〈《「『【〘〖〝‘“([{<')
 PARTICLE_BREAKERS = ('から','まで','より','ほど','だけ','こそ','でも','では','には','とは','って','なら','ので','のに','けど','が','を','に','へ','で','と','は','も','や','ね','よ')
 VERB_END_BREAKERS = ('です','ます','でした','ました','ません','だった','だ','する','した','して','れる','られる','たい','ない','なる','ある','いる','できる')
+BAD_LINE_END_PHRASES = ('もっと','その','この','あの','そう','どう','何も')
 
 def _looks_ascii(ch):
     return ch.isascii() and (ch.isalnum() or ch in "'&@#%+")
@@ -111,6 +112,12 @@ def _fix_kinsoku(lines):
                 lines[i] = lines[i - 1][-1] + lines[i]
                 lines[i - 1] = lines[i - 1][:-1]
                 changed = True
+            for phrase in BAD_LINE_END_PHRASES:
+                if lines[i - 1].endswith(phrase) and len(lines[i - 1]) > len(phrase):
+                    lines[i] = phrase + lines[i]
+                    lines[i - 1] = lines[i - 1][:-len(phrase)]
+                    changed = True
+                    break
     return [line for line in lines if line]
 
 def wrap_text_px(draw, text, font, max_width=900, stroke_width=10):
