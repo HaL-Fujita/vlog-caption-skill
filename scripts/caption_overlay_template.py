@@ -34,8 +34,8 @@ TITLES = [
     TitleEvent(0.0, 2.1, '向上心'),
 ]
 
-font_caption = ImageFont.truetype(FONT_PATH, 64)
-font_caption_yellow = ImageFont.truetype(FONT_PATH, 76)
+font_caption = ImageFont.truetype(FONT_PATH, 58)
+font_caption_yellow = ImageFont.truetype(FONT_PATH, 70)
 font_title = ImageFont.truetype(FONT_PATH, 116)
 font_label = ImageFont.truetype(FONT_PATH, 52)
 
@@ -155,7 +155,31 @@ def wrap_text_px(draw, text, font, max_width=900, stroke_width=10):
                 cur = test
         if cur:
             fixed.append(cur)
-    return _fix_kinsoku(fixed)
+    fixed = _fix_kinsoku(fixed)
+    final = []
+    for line in fixed:
+        bb = draw.textbbox((0, 0), line, font=font, stroke_width=stroke_width)
+        if bb[2] - bb[0] <= max_width:
+            final.append(line)
+            continue
+        cur = ''
+        for ch in line:
+            test = cur + ch
+            bb = draw.textbbox((0, 0), test, font=font, stroke_width=stroke_width)
+            if cur and (bb[2] - bb[0]) > max_width:
+                moved = ''
+                for phrase in BAD_LINE_END_PHRASES:
+                    if cur.endswith(phrase) and len(cur) > len(phrase):
+                        cur = cur[:-len(phrase)]
+                        moved = phrase
+                        break
+                final.append(cur)
+                cur = moved + ch
+            else:
+                cur = test
+        if cur:
+            final.append(cur)
+    return _fix_kinsoku(final)
 
 def draw_centered(draw, lines, font, y, fill, stroke=8, spacing=8):
     bbs = [draw.textbbox((0, 0), line, font=font, stroke_width=stroke) for line in lines]

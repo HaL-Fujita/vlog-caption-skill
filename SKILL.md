@@ -56,7 +56,7 @@ Don't use for: complex multi-camera editorial work, heavy color grading, or manu
 - Apply kinsoku shori: punctuation, small kana, prolonged sound marks, and closing brackets must not start a line; opening brackets must not end a line.
 - Avoid breaking immediately before particles/auxiliary endings when a nearby phrase boundary exists. Captions should read as short bunsetsu-like phrases.
 - Avoid leaving setup words like「もっと」「その」「この」「そう」at the end of a line when the predicate starts the next line; move them forward to the next line.
-- Use a pixel-width wrapper with a safe maximum width, usually 860-900 px for a 1080 px canvas.
+- Use a pixel-width wrapper with a safe maximum width, usually 860-900 px for a 1080 px canvas. For thick outlined Japanese Vlog captions, start around 58 px white text and 70 px yellow emphasis text, then adjust visually.
 - Verify overflow programmatically by measuring every rendered caption line's bounding box.
 - Also spot-check exported frames visually. Programmatic width checks do not catch bad vertical placement or awkward overlap with the speaker.
 
