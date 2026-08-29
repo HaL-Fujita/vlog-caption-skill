@@ -5,7 +5,8 @@ Hermes skill for editing vertical talking-head Vlogs with large Japanese caption
 ## Files
 
 - `SKILL.md` — reusable Hermes skill instructions.
-- `scripts/caption_overlay_template.py` — Pillow overlay template using pixel-width wrapping to avoid caption overflow.
+- `scripts/caption_overlay_template.py` — Pillow overlay template using BudouX-style phrase wrapping, kinsoku guards, and pixel-width checks to avoid awkward line breaks and caption overflow.
+- `requirements.txt` — Pillow + optional BudouX dependency list.
 
 ## Install locally
 
