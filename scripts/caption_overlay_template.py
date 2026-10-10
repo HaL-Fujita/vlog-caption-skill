@@ -11,6 +11,10 @@ except Exception:  # BudouX is optional; fallback keeps the template portable.
 
 W, H, FPS = 1080, 1920, 30
 FONT_PATH = '/System/Library/Fonts/ヒラギノ角ゴシック W8.ttc'
+# Komachi's default accent: sakura pink (#FFB7C5). Keep normal captions white.
+EMPHASIS_COLOR = (255, 183, 197, 255)
+# Accept legacy events while rendering all emphasis in the selected accent.
+EMPHASIS_STYLES = {'emphasis', 'pink', 'yellow'}
 
 @dataclass(frozen=True)
 class CaptionEvent:
@@ -35,7 +39,7 @@ TITLES = [
 ]
 
 font_caption = ImageFont.truetype(FONT_PATH, 58)
-font_caption_yellow = ImageFont.truetype(FONT_PATH, 70)
+font_caption_emphasis = ImageFont.truetype(FONT_PATH, 70)
 font_title = ImageFont.truetype(FONT_PATH, 116)
 font_label = ImageFont.truetype(FONT_PATH, 52)
 
@@ -210,13 +214,14 @@ def render_overlay(duration, out):
             img = Image.new('RGBA', (W, H), (0, 0, 0, 0))
             draw = ImageDraw.Draw(img)
             if title:
-                draw_centered(draw, [title.title], font_title, 245, (255, 232, 0, 255), stroke=12)
+                draw_centered(draw, [title.title], font_title, 245, EMPHASIS_COLOR, stroke=12)
                 draw_centered(draw, [title.label], font_label, 370, (255, 255, 255, 255), stroke=7)
             if caption:
-                font = font_caption_yellow if caption.color == 'yellow' else font_caption
-                fill = (255, 232, 0, 255) if caption.color == 'yellow' else (255, 255, 255, 255)
-                stroke = 10 if caption.color == 'yellow' else 8
-                max_width = 860 if caption.color == 'yellow' else 900
+                emphasized = caption.color in EMPHASIS_STYLES
+                font = font_caption_emphasis if emphasized else font_caption
+                fill = EMPHASIS_COLOR if emphasized else (255, 255, 255, 255)
+                stroke = 10 if emphasized else 8
+                max_width = 860 if emphasized else 900
                 lines = wrap_text_px(draw, caption.text, font, max_width=max_width, stroke_width=stroke)
                 draw_centered(draw, lines, font, 585 if title else 430, fill, stroke=stroke, spacing=10)
             last_bytes = img.tobytes()
@@ -231,9 +236,10 @@ def verify_no_overflow():
     draw = ImageDraw.Draw(img)
     problems = []
     for event in CAPTIONS:
-        font = font_caption_yellow if event.color == 'yellow' else font_caption
-        stroke = 10 if event.color == 'yellow' else 8
-        max_width = 860 if event.color == 'yellow' else 900
+        emphasized = event.color in EMPHASIS_STYLES
+        font = font_caption_emphasis if emphasized else font_caption
+        stroke = 10 if emphasized else 8
+        max_width = 860 if emphasized else 900
         for line in wrap_text_px(draw, event.text, font, max_width=max_width, stroke_width=stroke):
             bb = draw.textbbox((0, 0), line, font=font, stroke_width=stroke)
             if bb[2] - bb[0] > 980:
